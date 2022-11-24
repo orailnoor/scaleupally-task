@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:assignment/Models/chartererModel.dart';
 import 'package:assignment/api_services.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -21,8 +23,16 @@ TextEditingController websiteController = TextEditingController();
 TextEditingController countryController = TextEditingController();
 TextEditingController getCharterer = TextEditingController();
 List<Datum> chartererModel = <Datum>[];
+String token = '';
 
 class _AddChartererState extends State<AddCharterer> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    getToken();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +49,7 @@ class _AddChartererState extends State<AddCharterer> {
                 countryController.text.isNotEmpty &&
                 websiteController.text.isNotEmpty) {
               ApiServices().callApi(
+                tokenAPI: token,
                 name: nameController.text,
                 email: emailController.text,
                 mob: phoneController.text,
@@ -438,7 +449,7 @@ class _AddChartererState extends State<AddCharterer> {
                         controller: getCharterer,
 
                         onSubmitted: (val) {
-                          ApiServices().getUserData(getCharterer.text);
+                          ApiServices().getUserData(getCharterer.text, token);
                           setState(() {});
                         },
                         cursorColor: Colors.grey,
@@ -465,8 +476,8 @@ class _AddChartererState extends State<AddCharterer> {
                           child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: FutureBuilder(
-                              future:
-                                  ApiServices().getUserData(getCharterer.text),
+                              future: ApiServices()
+                                  .getUserData(getCharterer.text, token),
                               builder: (context, snap) {
                                 return snap.connectionState !=
                                         ConnectionState.waiting
@@ -534,5 +545,25 @@ class _AddChartererState extends State<AddCharterer> {
         );
       },
     );
+  }
+
+  void getToken() async {
+    var request = http.Request(
+        'GET',
+        Uri.parse(
+            'https://sheet2api.com/v1/JfU2A24YSh2a/untitled-spreadsheet#'));
+
+    var streamedResponse = await request.send();
+    var response = await http.Response.fromStream(streamedResponse);
+    var body = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      // print(await response.body.toString());
+      print(body[0]['Token']);
+      token = body[0]['Token'];
+    } else {
+      print(body[0]['Token']);
+      token = body[0]['Token'];
+      print(response.reasonPhrase);
+    }
   }
 }
