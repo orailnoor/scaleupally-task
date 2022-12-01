@@ -1,4 +1,5 @@
 import 'package:assignment/Screens/add_charterer.dart';
+import 'package:assignment/Screens/persisted_api_data.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -18,6 +19,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
           primarySwatch: Colors.blue,
         ),
-        home: const AddCharterer());
+        home: const PersistedAPIdata());
   }
 }
